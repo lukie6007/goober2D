@@ -27,8 +27,13 @@ let propertyInfo = {
         { 'label': 'CSS', 'property': 'innerText', 'type': "script", "ID": 100 },
     ],
     'p': [
-        { 'label': 'Text', 'property': 'innerText', 'type': "text", "ID": 110 },
+        { 'label': 'Text', 'property': 'innerHTML', 'type': "text", "ID": 110 },
         { 'label': 'Style', 'property': 'style', 'type': "script", "ID": 120 }
+    ],
+    'a': [
+        { 'label': 'Text', 'property': 'innerHTML', 'type': "text", "ID": 120 },
+        { 'label': 'Link', 'property': 'href', 'type': "text", "ID": 130 },
+        { 'label': 'Style', 'property': 'style', 'type': "script", "ID": 140 }
     ],
 };
 

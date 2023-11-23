@@ -19,7 +19,7 @@
 
     <!-- Include CodeMirror addon for JavaScript hinting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/addon/hint/javascript-hint.min.js"></script>
-
+    <link rel="icon" type="image/x-icon" href="/assets/logo.ico">
     <style>
         html,
         body {
@@ -198,6 +198,16 @@
             gap: 5px;
             font-size: 14px;
         }
+
+        #cssmaker {
+            width: 80%;
+            background-color: #333;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -212,6 +222,7 @@
                 <button onclick="newElement('script')">Add Script</Script></button>
                 <button onclick="newElement('style')">Add Style</Script></button>
                 <button onclick="newElement('p')">Add Text</Script></button>
+                <button onclick="newElement('a')">Add Link</Script></button>
             </div>
             <div>
                 <button onclick="exportHTML()">Export HTML</button>
@@ -221,6 +232,8 @@
 
             </div>
         </div>
+
+
 
         <div class="panel" id="elementList">
         </div>
@@ -232,7 +245,98 @@
         <div id="main">
             <!-- Content for the main container goes here -->
         </div>
+
+        <div class="panel" id="cssmaker">
+            <h4>Goober Styles Generator</h4>
+            <div>
+                <h5>Color:</h5>
+                <label for="color">Text Color:</label>
+                <input id="color" type="color">
+                <label for="background-color">Background Color:</label>
+                <input id="background-color" type="color">
+            </div>
+
+            <div>
+                <h5>Typography:</h5>
+                <label for="font-family">Font Family:</label>
+                <input id="font-family" type="text">
+                <label for="font-size">Font Size:</label>
+                <input id="font-size" type="text">
+                <div></div>
+                <label for="font-weight">Font Weight:</label>
+                <input id="font-weight" type="text">
+                <label for="text-align">Text Align:</label>
+                <input id="text-align" type="text">
+            </div>
+
+            <div>
+                <h5>Background:</h5>
+                <label for="background-image">Background Image:</label>
+                <input id="background-image" type="text">
+                <label for="background-position">Background Position:</label>
+                <input id="background-position" type="text">
+            </div>
+
+            <div>
+                <h5>Box Model:</h5>
+                <label for="margin">Margin:</label>
+                <input id="margin" type="text">
+                <label for="padding">Padding:</label>
+                <input id="padding" type="text">
+            </div>
+
+            <div>
+                <h5>Borders:</h5>
+                <label for="border-width">Border Width:</label>
+                <input id="border-width" type="text">
+                <label for="border-style">Border Style:</label>
+                <input id="border-style" type="text">
+                <label for="border-color">Border Color:</label>
+                <input id="border-color" type="color">
+            </div>
+
+            <button onclick="generateCSS()">Generate Styles</button>
+            <div id="cssOutput"></div>
+        </div>
     </div>
+    <script>
+        function generateCSS() {
+            const color = document.getElementById('color').value;
+            const backgroundColor = document.getElementById('background-color').value;
+            const fontFamily = document.getElementById('font-family').value;
+            const fontSize = document.getElementById('font-size').value;
+            const fontWeight = document.getElementById('font-weight').value;
+            const textAlign = document.getElementById('text-align').value;
+            const backgroundImage = document.getElementById('background-image').value;
+            const backgroundPosition = document.getElementById('background-position').value;
+            const margin = document.getElementById('margin').value;
+            const padding = document.getElementById('padding').value;
+            const borderWidth = document.getElementById('border-width').value;
+            const borderStyle = document.getElementById('border-style').value;
+            const borderColor = document.getElementById('border-color').value;
+
+            const cssOutput = document.getElementById('cssOutput');
+
+            const cssStyles = `
+            .panel {
+                color: ${color};
+                background-color: ${backgroundColor};
+                font-family: ${fontFamily};
+                font-size: ${fontSize};
+                font-weight: ${fontWeight};
+                text-align: ${textAlign};
+                background-image: url('${backgroundImage}');
+                background-position: ${backgroundPosition};
+                margin: ${margin};
+                padding: ${padding};
+                border: ${borderWidth} ${borderStyle} ${borderColor};
+            }
+        `;
+
+            cssOutput.innerHTML = `<pre>${cssStyles}</pre>`;
+        }
+    </script>
+
     <script>
         // Initialize CodeMirror for all textareas with the specified class
         function loadText() {
