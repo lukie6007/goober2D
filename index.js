@@ -24,7 +24,7 @@ let propertyInfo = {
         { 'label': 'JavaScript', 'property': 'innerText', 'type': "script", "ID": 90 },
     ],
     'style': [
-        { 'label': 'CSS', 'property': 'innerText', 'type': "script", "ID": 100 },
+        { 'label': 'CSS', 'property': 'innerHTML', 'type': "script", "ID": 100 },
     ],
     'p': [
         { 'label': 'Text', 'property': 'innerHTML', 'type': "text", "ID": 110 },
@@ -132,12 +132,23 @@ function loadPage() {
         newElement.setAttribute('data-id', i);
 
         // Append the new element to the container element
-        main.appendChild(newElement);
+        switch (elementInfo.element) {
+            case 'style':
+                document.head.appendChild(newElement);
+                break;
+            case 'script':
+                document.head.appendChild(newElement);
+                break;
+            default:
+                main.appendChild(newElement);
+                break;
+        }
+
         console.info("Page Loaded:", page);
     }
     updateHierarchy()
 
-    return main;
+    return [document.head, main];
 }
 
 function saveProperties() {
@@ -206,6 +217,7 @@ function updateProperties(element) {
 
 
 function exportPage() {
+    window.changesMade = false
     // Convert the page object to JSON
     let pageJSON = JSON.stringify(page, null, 2);
 
@@ -262,7 +274,7 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-document.addEventListener("keydown", function (event) {
+/* document.addEventListener("keydown", function (event) {
     // Check if "Control + S" or "Command + S" is pressed
     if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
         event.preventDefault(); // Prevent the default browser save behavior
@@ -270,9 +282,9 @@ document.addEventListener("keydown", function (event) {
         // Save the properties when "Control + S" is pressed
         undo();
     }
-});
+}); */
 
-document.addEventListener("keydown", function (event) {
+/* document.addEventListener("keydown", function (event) {
     // Check if "Control + S" or "Command + S" is pressed
     if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
         event.preventDefault(); // Prevent the default browser save behavior
@@ -280,7 +292,18 @@ document.addEventListener("keydown", function (event) {
         // Save the properties when "Control + S" is pressed
         redo();
     }
-});
+}); */
+
+window.onload = function () {
+    window.addEventListener("beforeunload", function (e) {
+
+        var confirmationMessage = 'It looks like you have been editing something. '
+            + 'If you leave before saving, your changes will be lost.';
+
+        (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+        return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    });
+};
 
 
 document.addEventListener("click", function (event) {
@@ -299,73 +322,7 @@ function exportHTML() {
     let pageJSON = JSON.stringify(page, null, 2);
 
     // Wrap the JSON content in a minimal HTML document structure
-    let exportedHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exported Page</title>
-    <style>
-        #main {
-            flex-grow: 1;
-            overflow: auto;
-            width: 80%;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin: 20px auto;
-            outline: 2px solid #8d8d8d;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-    <script>
-        // Import the exported page object
-        let exportedPage = ${pageJSON};
-        
-        // Define the loadPage function
-        function loadPage() {
-               let main = document.body;
-
-    // Check if the element with ID "main" exists
-    if (!main) {
-        console.error('Main element not found.');
-        return;
-    }
-
-    main.innerHTML = '';
-
-            for (let i = 0; i < exportedPage.elements.length; i++) {
-                let elementInfo = exportedPage.elements[i];
-                let newElement = document.createElement(elementInfo.element);
-                newElement.generated = true;
-
-                for (let prop in elementInfo.properties) {
-                    if (prop === 'onclick') {
-                        newElement.onclick = new Function(elementInfo.properties[prop]);
-                    } else if (prop.startsWith('style.')) {
-                        const styleProp = prop.substring('style.'.length);
-                        newElement.style[styleProp] = elementInfo.properties[prop];
-                    } else {
-                        newElement[prop] = elementInfo.properties[prop];
-                    }
-                }
-
-                newElement.setAttribute('data-id', i);
-                main.appendChild(newElement);
-            }
-            updateHierarchy();
-            return main;
-        }
-
-        // Load the exported page
-        loadPage();
-    </script>
-    <script src="index.js"></script>
-</body>
-</html>`;
+    let exportedHTML = loadPage()[0].outerHTML + loadPage()[1].outerHTML
 
     // Create a Blob containing the HTML content
     let blob = new Blob([exportedHTML], { type: 'text/html' });

@@ -293,9 +293,24 @@
                 <input id="border-style" type="text">
                 <label for="border-color">Border Color:</label>
                 <input id="border-color" type="color">
+                <label for="border-radius">Border Radius:</label>
+                <input id="border-radius" type="text">
             </div>
+            <script>
+                function setStyle() {
+                    let element = window.Selected
 
-            <button onclick="generateCSS()">Generate Styles</button>
+                    if (element.element === 'style') {
+                        element.properties.innerHTML = generateCSS()
+                    } else {
+                        element.properties.style = generateCSS()
+                    }
+                    console.log(element)
+                    updateProperties(element)
+                    saveProperties()
+                }
+            </script>
+            <button onclick="setStyle()">Set Styles</button>
             <div id="cssOutput"></div>
         </div>
     </div>
@@ -314,11 +329,11 @@
             const borderWidth = document.getElementById('border-width').value;
             const borderStyle = document.getElementById('border-style').value;
             const borderColor = document.getElementById('border-color').value;
+            const borderRadius = document.getElementById('border-radius').value;
 
             const cssOutput = document.getElementById('cssOutput');
 
             const cssStyles = `
-            .panel {
                 color: ${color};
                 background-color: ${backgroundColor};
                 font-family: ${fontFamily};
@@ -330,38 +345,11 @@
                 margin: ${margin};
                 padding: ${padding};
                 border: ${borderWidth} ${borderStyle} ${borderColor};
-            }
+                border-radius:${borderRadius};
         `;
 
-            cssOutput.innerHTML = `<pre>${cssStyles}</pre>`;
-        }
-    </script>
-
-    <script>
-        // Initialize CodeMirror for all textareas with the specified class
-        function loadText() {
-            var codeMirrorTextareas = document.querySelectorAll('.codeMirrorTextarea');
-
-            codeMirrorTextareas.forEach(function (textarea) {
-                var editor = CodeMirror.fromTextArea(textarea, {
-                    mode: 'javascript',
-                    lineNumbers: true,
-                    theme: 'default',
-                    extraKeys: {
-                        "Tab": "autocomplete" // Enable autocomplete on Ctrl+Space
-                    },
-                    hintOptions: {
-                        hint: window.CodeMirror.hint.javascript, // Use JavaScript hinting
-                        completeSingle: false // Allows the editor to cycle through multiple suggestions
-                    }
-                });
-
-                // Listen for changes in the editor content
-                editor.on('change', function (instance) {
-                    // Handle changes here
-                    console.log(instance.getValue());
-                });
-            });
+            //cssOutput.innerHTML = `<pre>${cssStyles}</pre>`;
+            return cssStyles;
         }
     </script>
 
