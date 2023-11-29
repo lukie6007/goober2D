@@ -318,11 +318,46 @@ document.addEventListener("click", function (event) {
 
 
 function exportHTML() {
-    // Convert the page object to JSON
-    let pageJSON = JSON.stringify(page, null, 2);
+    // Save the current state before exporting
+    saveState();
+
+    // Get the existing scripts in the head
+    const headScripts = Array.from(document.head.getElementsByTagName('script'));
 
     // Wrap the JSON content in a minimal HTML document structure
-    let exportedHTML = loadPage()[0].outerHTML + loadPage()[1].outerHTML
+    let exportedHTML = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Exported Page</title>
+            <style>
+                #main {
+                    flex-grow: 1;
+                    overflow: auto;
+                    width: 80%;
+                    padding: 20px;
+                    background-color: #fff;
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                    border-radius: 8px;
+                    margin: 20px auto;
+                    height: auto;
+                }
+            </style>
+            ${headScripts.map(script => script.outerHTML).join('\n')}
+        </head>
+        <body>
+            <div id="main">
+                ${document.getElementById("main").innerHTML}
+            </div>
+            <script>
+                // Re-define the loadPage function
+                ${loadPage}
+            </script>
+        </body>
+        </html>
+    `;
 
     // Create a Blob containing the HTML content
     let blob = new Blob([exportedHTML], { type: 'text/html' });
@@ -341,6 +376,7 @@ function exportHTML() {
     // Remove the link from the document
     document.body.removeChild(link);
 }
+
 
 
 
