@@ -1,6 +1,6 @@
 # goober2D
 
-## DISCLAIMER:
+### DISCLAIMER:
 This project is still under development and features mentioned in this document may not exist yet, but are planned for later.
 
 goober2D, or goober, is a personal project initiated to streamline the process of maintaining HTML visuals.
