@@ -21,5 +21,5 @@ Unlike traditional HTML development, goober2D reduces the learning curve by offe
 
 ## Expansive Capabilities
 
-goober2D allows users to interact with JavaScript, opening possibilities for dynamic web development. This is optional but recommended to use, as JavaScript is a powerful tool. Goober2D removes the need for HTML and CSS limitations, allowing JavaScript to dynamically implement capabilities and not restrict the user.
+goober2D allows users to interact with JavaScript, opening possibilities for dynamic web development. This is optional but recommended to use, as JavaScript is a powerful tool.
 
