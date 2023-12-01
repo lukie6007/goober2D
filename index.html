@@ -48,8 +48,6 @@
             /* Add this to make it fill the remaining space */
         }
 
-        #properties {}
-
         .panel {
             width: 100px;
             height: 89vh;
@@ -65,9 +63,25 @@
             overflow: auto;
         }
 
+        #properties h3 {
+            margin: 10px;
+        }
+
+        #propertieswindow>* {
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        #propertieswindow button {
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .close-button {
             float: right;
-            color: white;
+            background-color: transparent;
             max-height: 1%;
             border-radius: 10px;
             border-width: 0px;
@@ -86,8 +100,10 @@
     <div id="action-bar">
         <img src="./assets/logo.png" alt="">
         <div id="object">
-            <button>Add Element</button>
-
+            <button
+                onclick="newElement('div', {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':'New Element'})">Add
+                Element
+            </button>
         </div>
         <div id="view">
             <button onclick="openPanel('preview')">Open Preview</button>
