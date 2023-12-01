@@ -4,169 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goober</title>
-    <!-- Include CodeMirror styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css">
-    <!-- Include CodeMirror addon for hinting -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/addon/hint/show-hint.min.css">
+    <title>goober2D</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            /* Remove default margin */
+        }
 
-    <!-- Include CodeMirror script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
-    <!-- Include CodeMirror addon for hinting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/addon/hint/show-hint.min.js"></script>
-    <!-- Include a CodeMirror mode (JavaScript in this case) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/javascript/javascript.min.js"></script>
+        #action-bar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px;
+        }
 
-    <!-- Include CodeMirror addon for JavaScript hinting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/addon/hint/javascript-hint.min.js"></script>
-    <link rel="icon" type="image/x-icon" href="/assets/logo.ico">
-    <link rel="stylesheet" href="./styles.css">
+        #action-bar img {
+            max-height: 20px;
+        }
+
+        #action-bar div {
+            margin-right: 25px;
+        }
+
+        #action-bar button {
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #action-bar>* {
+            margin-right: 10px;
+        }
+
+        #main {
+            display: flex;
+
+            /* Add this to make it fill the remaining space */
+        }
+
+        #properties {}
+
+        .panel {
+            width: 100px;
+            height: 89vh;
+            margin: 10px;
+            resize: horizontal;
+
+            /* Add this to make it fill the remaining space */
+
+            border-radius: 10px;
+            border-color: rgb(214, 214, 214);
+            border-style: solid;
+            border-width: 2px;
+            overflow: auto;
+        }
+
+        .close-button {
+            float: right;
+            color: white;
+            max-height: 1%;
+            border-radius: 10px;
+            border-width: 0px;
+            margin: 1%;
+        }
+
+        .close-button img {
+            max-height: 15px;
+        }
+    </style>
 </head>
 
+
+
 <body>
-    <div id="app-container">
-        <div id="action-bar">
-            <img src="./assets/logo.png" alt="logo" id="logo">
-            <div>
-                <button onclick="newElement('div')">Add Div</button>
-                <button onclick="newElement('button')">Add Button</button>
-                <button onclick="newElement('img')">Add Image</button>
-                <button onclick="newElement('script')">Add Script</Script></button>
-                <button onclick="newElement('style')">Add Style</Script></button>
-                <button onclick="newElement('p')">Add Text</Script></button>
-                <button onclick="newElement('a')">Add Link</Script></button>
-            </div>
-            <div>
-                <button onclick="exportHTML()">Export HTML</button>
-                <button onclick="exportPage()">Export Page</button>
-                <input type="file" id="importInput" accept=".json" />
-                <button onclick="importPageFromFile()">Import Page</button>
-
-            </div>
-        </div>
-
-
-
-        <div class="panel" id="elementList">
-        </div>
-
-        <div class="panel" id="properties">
+    <div id="action-bar">
+        <img src="./assets/logo.png" alt="">
+        <div id="object">
+            <button>Add Element</button>
 
         </div>
-
-        <div id="main">
-            <!-- Content for the main container goes here -->
-        </div>
-
-        <div class="panel" id="cssmaker">
-            <h4>Goober Styles Generator</h4>
-            <div>
-                <h5>Color:</h5>
-                <label for="color">Text Color:</label>
-                <input id="color" type="color">
-                <label for="background-color">Background Color:</label>
-                <input id="background-color" type="color">
-            </div>
-
-            <div>
-                <h5>Typography:</h5>
-                <label for="font-family">Font Family:</label>
-                <input id="font-family" type="text">
-                <label for="font-size">Font Size:</label>
-                <input id="font-size" type="text">
-                <div></div>
-                <label for="font-weight">Font Weight:</label>
-                <input id="font-weight" type="text">
-                <label for="text-align">Text Align:</label>
-                <input id="text-align" type="text">
-            </div>
-
-            <div>
-                <h5>Background:</h5>
-                <label for="background-image">Background Image:</label>
-                <input id="background-image" type="text">
-                <label for="background-position">Background Position:</label>
-                <input id="background-position" type="text">
-            </div>
-
-            <div>
-                <h5>Box Model:</h5>
-                <label for="margin">Margin:</label>
-                <input id="margin" type="text">
-                <label for="padding">Padding:</label>
-                <input id="padding" type="text">
-            </div>
-
-            <div>
-                <h5>Borders:</h5>
-                <label for="border-width">Border Width:</label>
-                <input id="border-width" type="text">
-                <label for="border-style">Border Style:</label>
-                <input id="border-style" type="text">
-                <label for="border-color">Border Color:</label>
-                <input id="border-color" type="color">
-                <label for="border-radius">Border Radius:</label>
-                <input id="border-radius" type="text">
-            </div>
-            <script>
-                function setStyle() {
-                    let element = window.Selected
-
-                    if (element.element === 'style') {
-                        element.properties.innerHTML = generateCSS()
-                    } else {
-                        element.properties.style = generateCSS()
-                    }
-                    console.log(element)
-                    updateProperties(element)
-                    saveProperties()
-                }
-            </script>
-            <button onclick="setStyle()">Set Styles</button>
-            <div id="cssOutput"></div>
+        <div id="view">
+            <button onclick="openPanel('preview')">Open Preview</button>
+            <button onclick="openPanel('properties')">Open Properties</button>
         </div>
     </div>
-    <script>
-        function generateCSS() {
-            const color = document.getElementById('color').value;
-            const backgroundColor = document.getElementById('background-color').value;
-            const fontFamily = document.getElementById('font-family').value;
-            const fontSize = document.getElementById('font-size').value;
-            const fontWeight = document.getElementById('font-weight').value;
-            const textAlign = document.getElementById('text-align').value;
-            const backgroundImage = document.getElementById('background-image').value;
-            const backgroundPosition = document.getElementById('background-position').value;
-            const margin = document.getElementById('margin').value;
-            const padding = document.getElementById('padding').value;
-            const borderWidth = document.getElementById('border-width').value;
-            const borderStyle = document.getElementById('border-style').value;
-            const borderColor = document.getElementById('border-color').value;
-            const borderRadius = document.getElementById('border-radius').value;
 
-            const cssOutput = document.getElementById('cssOutput');
+    <div id="main">
+    </div>
 
-            const cssStyles = `
-                color: ${color};
-                background-color: ${backgroundColor};
-                font-family: ${fontFamily};
-                font-size: ${fontSize};
-                font-weight: ${fontWeight};
-                text-align: ${textAlign};
-                background-image: url('${backgroundImage}');
-                background-position: ${backgroundPosition};
-                margin: ${margin};
-                padding: ${padding};
-                border: ${borderWidth} ${borderStyle} ${borderColor};
-                border-radius:${borderRadius};
-        `;
-
-            //cssOutput.innerHTML = `<pre>${cssStyles}</pre>`;
-            return cssStyles;
-        }
-    </script>
-
-
+    <script src="ui.js"></script>
     <script src="index.js"></script>
+
 </body>
 
 </html>
