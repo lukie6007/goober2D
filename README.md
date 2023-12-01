@@ -1,5 +1,8 @@
 # goober2D
 
+## DISCLAIMER:
+This project is still under development and features mentioned in this document may not exist yet, but are planned for later.
+
 goober2D, or goober, is a personal project initiated to streamline the process of maintaining HTML visuals.
 This tool aims to provide an intuitive interface for users, making it easier to create, manage, and preview HTML content.
 Whether you're a web designer, developer, or just starting with HTML, goober2D strives to simplify the intricacies of web development.
