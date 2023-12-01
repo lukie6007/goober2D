@@ -1,7 +1,8 @@
 const panelHtml = {
-    "preview": ` `,
+    "preview": `<div id="pageload"></div>`,
     "properties": `
-    <h2>Properties</h2>
+    <h3>Properties</h3>
+    <div id="propertieswindow"></div>
     `,
     "error": `<h1>Oh no!</h1> 
     <p>Something happened, this window doesn't exist!</p>`
