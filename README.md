@@ -13,7 +13,7 @@ goober2D is designed with the user in mind, focusing on simplicity and ease of u
 
 ## Real-Time Previews
 
-Goober2D enables users to preview their HTML content in real-time. The preview window allows instant visualization of how the webpage will appear to end-users. This immediate feedback loop empowers users to make quick adjustments, enhancing the efficiency of the development process.
+goober2D enables users to preview their HTML content in real-time. The preview window allows instant visualization of how the webpage will appear to end-users. This immediate feedback loop empowers users to make quick adjustments, enhancing the efficiency of the development process.
 
 ## Minimal Learning Curve
 
