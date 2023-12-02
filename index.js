@@ -50,9 +50,30 @@ let elementPropertiesInfo = {
     "a": [
         "BASIC",
         "VISUAL",
+        { "label": "Link", "property": "href", "type": "text", "id": "linkSource" },
     ],
     "script": [
         "BASIC",
+        { "label": "Script Properties", "type": "heading" },
+        { "label": "Source", "property": "src", "type": "text", "id": "scriptSource" },
+        { "label": "Script", "property": "innerHTML", "type": "script", "id": "scriptScript" },
+    ],
+    "label": [
+        "BASIC",
+        "VISUAL",
+        { "label": "For ID:", "property": "for", "type": "text", "id": "labelFor" },
+    ],
+    "input": [
+        "BASIC",
+        { "label": "Visual Properties", "type": "heading" },
+        { "label": "Style", "property": "style", "type": "script", "id": "inputStyle" },
+        { "label": "Placeholder", "property": "placeholder", "type": "text", "id": "inputPlaceholder" }
+    ],
+    "textarea": [
+        "BASIC",
+        { "label": "Visual Properties", "type": "heading" },
+        { "label": "Style", "property": "style", "type": "script", "id": "inputStyle" },
+        { "label": "Placeholder", "property": "innerHTML", "type": "text", "id": "inputPlaceholder" }
     ],
 };
 
@@ -221,7 +242,6 @@ function updatePropertiesPanel(elementselect) {
         <button onclick="saveProperties()">Save</button>
         <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
         `;
-            loadPage()
         }
 
     }
