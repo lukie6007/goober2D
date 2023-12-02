@@ -109,7 +109,6 @@ let page = {
     "elements": []
 };
 
-
 function loadPage() {
     let preview = document.getElementById('pageload');
 
