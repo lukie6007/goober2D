@@ -38,6 +38,20 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        #action-bar select {
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #action-bar select option {
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
         #action-bar>* {
             margin-right: 10px;
         }
@@ -48,9 +62,8 @@
             /* Add this to make it fill the remaining space */
         }
 
-        #properties {}
-
         .panel {
+            position: relative;
             width: 100px;
             height: 89vh;
             margin: 10px;
@@ -65,17 +78,46 @@
             overflow: auto;
         }
 
-        .close-button {
-            float: right;
+        #properties h3 {
+            color: rgb(0, 0, 0);
+            margin: 10px;
+        }
+
+        #propertieswindow>* {
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        #propertieswindow button {
+            background-color: blueviolet;
+            border-radius: 10px;
             color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #propertieswindow textarea {
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .close-button {
+            position: sticky;
+            top: 10px;
+            float: right;
+            /* Adjust the distance from the right edge as needed */
+            background-color: transparent;
             max-height: 1%;
             border-radius: 10px;
             border-width: 0px;
-            margin: 1%;
+            margin: 10px;
+            z-index: 10;
         }
+
 
         .close-button img {
             max-height: 15px;
+            background-image: url('./assets/xbutton.png');
+            background-attachment: fixed;
         }
     </style>
 </head>
@@ -86,8 +128,42 @@
     <div id="action-bar">
         <img src="./assets/logo.png" alt="">
         <div id="object">
-            <button>Add Element</button>
+            <button
+                onclick="newElement(getDropdownElement(), {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png'})">
+                Add Element
 
+            </button>
+            <select name="elements" id="elementlist">
+                <option value="null" disabled selected>Select an Element</option>
+
+                <optgroup label="Basic Elements">
+                    <option value="div">Division</option>
+                    <option value="p">Paragraph</option>
+                    <option value="img">Image</option>
+                </optgroup>
+
+                <optgroup label="Headings">
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                    <option value="h4">Heading 4</option>
+                    <option value="h5">Heading 5</option>
+                    <option value="h5">Heading 6</option>
+                </optgroup>
+
+                <optgroup label="Interactive Elements">
+                    <option value="button">Button</option>
+                    <option value="a">Link</option>
+                    <option value="script">Script</option>
+                </optgroup>
+
+                <optgroup label="Input">
+                    <option value="label">Input Label</option>
+                    <option value="input">Input Box</option>
+                    <option value="textarea">Script Area</option>
+                </optgroup>
+
+            </select>
         </div>
         <div id="view">
             <button onclick="openPanel('preview')">Open Preview</button>
@@ -98,8 +174,9 @@
     <div id="main">
     </div>
 
-    <script src="ui.js"></script>
     <script src="index.js"></script>
+    <script src="ui.js"></script>
+
 
 </body>
 
