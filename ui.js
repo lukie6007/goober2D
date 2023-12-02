@@ -1,9 +1,14 @@
 const panelHtml = {
     "preview": `<div id="pageload"></div>`,
+
     "properties": `
     <h3>Properties Panel</h3>
     <div id="propertieswindow"></div>
     `,
+
+    "hierarchy": `<h3>Hierarchy</h3>
+    <div id="hierarchywindow"></div>`,
+
     "error": `<h1>Oh no!</h1> 
     <p>Something happened, this window doesn't exist!</p>`
 }
@@ -17,7 +22,7 @@ function createPanel(id) {
     let panel = document.createElement('div')
     panel.id = id
     panel.className = 'panel'
-    panel.style.width = '100%'
+    panel.style.width = '500px'
     panel.innerHTML = `
             <button class="close-button" onclick="closePanel(this)">
                 <img src="./assets/xbutton.png" alt="Close Panel">

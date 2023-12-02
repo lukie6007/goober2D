@@ -15,7 +15,7 @@ let elementPropertiesInfo = {
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
         { "label": "Source", "property": "src", "type": "text", "id": "imageSource" },
-        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageSource" },
+        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageAlt" },
         { "label": "Style", "property": "style", "type": "script", "id": "imageStyle" },
     ],
 
@@ -128,6 +128,8 @@ function loadPage() {
 
             preview.appendChild(newElement);
         }
+        updateHierarchyPanel()
+
     }
 }
 
@@ -190,6 +192,31 @@ function getDropdownElement() {
     }
 }
 
+function objectToHTML(obj, parentElement) {
+    const ul = document.createElement('ul');
+    parentElement.appendChild(ul);
+
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            const li = document.createElement('li');
+            li.textContent = key;
+
+            if (typeof obj[key] === 'object') {
+                objectToHTML(obj[key], li);
+            } else {
+                const span = document.createElement('span');
+                span.textContent = `: ${obj[key]}`;
+                li.appendChild(span);
+            }
+
+            ul.appendChild(li);
+
+        }
+    }
+}
+
+
+
 function updatePropertiesPanel(elementselect) {
     let element = elementselect || window.ElementSelected || null
     let panel = document.getElementById('propertieswindow');
@@ -247,6 +274,15 @@ function updatePropertiesPanel(elementselect) {
 
 }
 
+function updateHierarchyPanel() {
+    let panel = document.getElementById('hierarchywindow')
+    if (panel) {
+        panel.innerHTML = ''
+        objectToHTML(page.elements, panel);
+    }
+
+}
+
 document.addEventListener('click', function (event) {
     let element = event.target;
 
@@ -267,3 +303,4 @@ document.addEventListener('keydown', function (event) {
 });
 
 loadPage()
+
