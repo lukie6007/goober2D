@@ -58,7 +58,7 @@ let elementPropertiesInfo = {
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
         { "label": "Source", "property": "src", "type": "text", "id": "imageSource" },
-        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageSource" },
+        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageAlt" },
         { "label": "Style", "property": "style", "type": "script", "id": "imageStyle" },
     ],
 
@@ -109,15 +109,39 @@ let elementPropertiesInfo = {
     "input": [
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
-        { "label": "Style", "property": "style", "type": "script", "id": "inputStyle" },
+        { "label": "Input Type", "property": "type", "type": "dropdown", "id": "inputType" },
         { "label": "Placeholder", "property": "placeholder", "type": "text", "id": "inputPlaceholder" }
     ],
     "textarea": [
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
-        { "label": "Style", "property": "style", "type": "script", "id": "inputStyle" },
+
         { "label": "Placeholder", "property": "innerHTML", "type": "text", "id": "inputPlaceholder" }]
 };
+
+function getPropertyDropdown(id, value) {
+    const dropdownValues = {
+        'inputType': `<select id="inputType">
+            <option value="text" ${value === 'text' ? 'selected' : ''}>Text</option>
+            <option value="password" ${value === 'password' ? 'selected' : ''}>Password</option>
+            <option value="checkbox" ${value === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+            <option value="radio" ${value === 'radio' ? 'selected' : ''}>Radio</option>
+            <option value="number" ${value === 'number' ? 'selected' : ''}>Number</option>
+            <option value="date" ${value === 'date' ? 'selected' : ''}>Date</option>
+            <option value="color" ${value === 'color' ? 'selected' : ''}>Color</option>
+            <option value="file" ${value === 'file' ? 'selected' : ''}>File</option>
+            <option value="submit" ${value === 'submit' ? 'selected' : ''}>Submit</option>
+            <option value="reset" ${value === 'reset' ? 'selected' : ''}>Reset</option>
+            <option value="email" ${value === 'email' ? 'selected' : ''}>Email</option>
+            <option value="url" ${value === 'url' ? 'selected' : ''}>URL</option>
+            <option value="tel" ${value === 'tel' ? 'selected' : ''}>Telephone</option>
+            <option value="search" ${value === 'search' ? 'selected' : ''}>Search</option>
+        </select>`
+    };
+
+    return dropdownValues[id] || ''; // Check if the key exists
+}
+
 
 function replaceKeywordsWithSet(obj, keyword, replacement) {
     for (let key in obj) {
@@ -142,6 +166,7 @@ let basicProperties = [
 let visualProperties = [
     { "label": "Visual Properties", "type": "heading" },
     { "label": "Text", "property": "innerHTML", "type": "text", "id": "defaultText" },
+    { "label": "Style", "property": "style", "type": "script", "id": "defaultStyle" },
 ];
 
 replaceKeywordsWithSet(elementPropertiesInfo, "BASIC", basicProperties);
@@ -293,6 +318,8 @@ function renderPropertyInput(property, element) {
         <textarea id="${property.id}">${element.properties[property.property] || ''}</textarea>`;
     } else if (property.type === 'heading') {
         inputElement = `<hr><h3>${property.label}</h3>`;
+    } else if (property.type === 'dropdown') {
+        inputElement = getPropertyDropdown(property.id, element.properties[property.property] || '')
     } else {
         inputElement = `<label for="${property.id}">${property.label}</label>
                       <input type="${property.type}" id="${property.id}" value="${element.properties[property.property] || ''}">`;
@@ -363,20 +390,6 @@ function updatePropertiesPanel(elementSelect) {
 }
 
 
-function parseInlineCSS(cssString) {
-    const inlineProperties = {};
-    const propertyRegex = /([^:\s]+)\s*:\s*([^;]+);/g;
-
-    let propertyMatch;
-    while ((propertyMatch = propertyRegex.exec(cssString)) !== null) {
-        const property = propertyMatch[1].trim();
-        const value = propertyMatch[2].trim();
-        inlineProperties[property] = value;
-    }
-
-    return inlineProperties;
-}
-
 function objectToHTML(tagName, attributes) {
     const attributeString = Object.entries(attributes)
         .map(([key, value]) => `${key}="${value}"`)
@@ -394,7 +407,7 @@ function addStyleProperty(value) {
 
             // Check if the style property already exists to avoid duplicates
             if (!currentStyle.includes(`${key}:`)) {
-                window.ElementSelected.properties.style += `${currentStyle} ${key}: ${value};`;
+                window.ElementSelected.properties.style += `${key}: ${value};\n`;
                 updateStylePanel();
             }
         }
@@ -419,9 +432,15 @@ function changeStyleProperty(property, value) {
         // Update the style panel
         updateStylePanel();
         loadPage()
+        updatePropertiesPanel();
     }
 }
 
+const styleInputs = {
+    'color': 'color',
+    'background-color': 'color',
+    'background-image': 'url',
+}
 
 function updateStylePanel() {
     let panel = document.getElementById('style-window');
@@ -432,13 +451,18 @@ function updateStylePanel() {
 
         for (let key in styles) {
             if (styles.hasOwnProperty(key)) {
-                html += `<li>${key}: <input onchange="changeStyleProperty('${key}', event.target.value)" value="${styles[key]}"></input></li>`;
+                html += `<li>${key}: <input type="${styleInputs[key]}" onchange="changeStyleProperty('${key}', event.target.value)" value="${styles[key]}"></input></li>`;
             }
         }
 
         html += '</ul>';
 
         panel.innerHTML = html;
+
+        let advancedStyle = document.getElementById('defaultStyle')
+        if (advancedStyle) {
+            advancedStyle.innerHTML = window.ElementSelected.properties.style
+        }
     }
 }
 
