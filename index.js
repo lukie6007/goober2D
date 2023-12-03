@@ -1,3 +1,48 @@
+const cssDropdown = `<select id="cssProperties" onchange="applyProperty()">
+    <option selected disabled value="">Select a property</option>
+
+    <optgroup label="Text Properties">
+        <option value="color">Color</option>
+        <option value="font-size">Font Size</option>
+        <option value="font-family">Font Family</option>
+        <option value="text-align">Text Align</option>
+        <option value="text-decoration">Text Decoration</option>
+        <option value="line-height">Line Height</option>
+    </optgroup>
+
+    <optgroup label="Box Model Properties">
+        <option value="margin">Margin</option>
+        <option value="padding">Padding</option>
+        <option value="border">Border</option>
+        <option value="width">Width</option>
+        <option value="height">Height</option>
+        <option value="display">Display</option>
+        <option value="position">Position</option>
+        <option value="top">Top</option>
+        <option value="right">Right</option>
+        <option value="bottom">Bottom</option>
+        <option value="left">Left</option>
+        <option value="float">Float</option>
+        <option value="clear">Clear</option>
+    </optgroup>
+
+    <optgroup label="Background Properties">
+        <option value="background-color">Background Color</option>
+        <option value="background-image">Background Image</option>
+        <option value="background-size">Background Size</option>
+        <option value="background-position">Background Position</option>
+    </optgroup>
+
+    <optgroup label="Flexbox Properties">
+        <option value="flex">Flex</option>
+        <option value="flex-direction">Flex Direction</option>
+        <option value="justify-content">Justify Content</option>
+        <option value="align-items">Align Items</option>
+    </optgroup>
+
+    <!-- Add more groups and options as needed -->
+</select>`
+
 
 let elementPropertiesInfo = {
     "div": [
@@ -99,7 +144,6 @@ let basicProperties = [
 let visualProperties = [
     { "label": "Visual Properties", "type": "heading" },
     { "label": "Text", "property": "innerHTML", "type": "text", "id": "defaultText" },
-    { "label": "Style", "property": "style", "type": "script", "id": "defaultStyle" }
 ];
 
 replaceKeywordsWithSet(elementPropertiesInfo, "BASIC", basicProperties);
@@ -128,6 +172,7 @@ function loadPage() {
 
             preview.appendChild(newElement);
         }
+        updateStylePanel()
     }
 }
 
@@ -190,62 +235,109 @@ function getDropdownElement() {
     }
 }
 
-function updatePropertiesPanel(elementselect) {
-    let element = elementselect || window.ElementSelected || null
-    let panel = document.getElementById('propertieswindow');
-    if (panel) {
+function renderPropertyInput(property, element) {
+    let inputElement;
 
-        panel.innerHTML = ''
+    if (property.type === 'script') {
+        inputElement = `<textarea id="${property.id}">${element.properties[property.property] || ''}</textarea>`;
+    } else if (property.type === 'heading') {
+        inputElement = `<hr><h3>${property.label}</h3>`;
+    } else {
+        inputElement = `<label for="${property.id}">${property.label}</label>
+                      <input type="${property.type}" id="${property.id}" value="${element.properties[property.property] || ''}">`;
+    }
+
+    return `${inputElement}<div></div>`;
+}
+
+function updatePropertiesPanel(elementSelect) {
+    let element = elementSelect || window.ElementSelected || null;
+    let panel = document.getElementById('propertieswindow');
+
+    if (panel) {
+        panel.innerHTML = '';
 
         if (element) {
-
-            panel.innerHTML = `
-        <h1>${element.properties.name || element.elementType}</h1>
-        `;
+            let content = `<h1>${element.properties.name || element.elementType}</h1>`;
 
             let thisElementPropertiesInfo = elementPropertiesInfo[element.elementType];
 
             thisElementPropertiesInfo.forEach(property => {
-                if (property.type === 'script') {
-                    panel.innerHTML += `
-            <p>${property.label}</p>
-            <textarea id="${property.id}">${element.properties[property.property] || ''}</textarea>
-            <div></div>
-            `;
-                } else {
-                    if (property.type === 'heading') {
-                        panel.innerHTML += `
-                    <hr>
-            <h3>${property.label}</h3>
-            
-            `;
-
-                    } else {
-
-                        panel.innerHTML += `
-            <label for="${property.id}">${property.label}</label>
-            <input type="${property.type}" id="${property.id}" value="${element.properties[property.property] || ''}">
-            <div></div>
-            `;
-
-                    }
-
-                }
-
+                content += renderPropertyInput(property, element);
             });
 
-            window.ElementSelected = element
-            panel.innerHTML += `
-        <div></div>
-        <hr>
-        <button onclick="saveProperties()">Save</button>
-        <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
+            window.ElementSelected = element;
+            content += `
+          <div></div>
+          <hr>
+          <button onclick="saveProperties()">Save</button>
+          <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
         `;
-        }
 
+            panel.innerHTML = content;
+        }
+    }
+}
+
+
+function parseInlineCSS(cssString) {
+    const inlineProperties = {};
+    const propertyRegex = /([^:\s]+)\s*:\s*([^;]+);/g;
+
+    let propertyMatch;
+    while ((propertyMatch = propertyRegex.exec(cssString)) !== null) {
+        const property = propertyMatch[1].trim();
+        const value = propertyMatch[2].trim();
+        inlineProperties[property] = value;
     }
 
+    return inlineProperties;
 }
+
+function objectToHTML(tagName, attributes) {
+    const attributeString = Object.entries(attributes)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+
+    return `<${tagName} ${attributeString}></${tagName}>`;
+}
+
+function addStyleProperty(value) {
+    if (window.ElementSelected) {
+        let keyElement = document.getElementById('cssProperties');
+        if (keyElement) {
+            let key = keyElement.value;
+            let currentStyle = window.ElementSelected.properties.style || '';
+
+            // Check if the style property already exists to avoid duplicates
+            if (!currentStyle.includes(`${key}:`)) {
+                window.ElementSelected.properties.style += `${currentStyle} ${key}: ${value};`;
+                updateStylePanel();
+            }
+        }
+    }
+}
+
+
+function updateStylePanel() {
+    let panel = document.getElementById('style-window');
+
+    if (panel && window.ElementSelected) {
+        let styles = parseInlineCSS(window.ElementSelected.properties.style);
+        let html = '<ul>';
+
+        for (let key in styles) {
+            if (styles.hasOwnProperty(key)) {
+                html += `<li>${key}: ${styles[key]}</li>`;
+            }
+        }
+
+        html += '</ul>';
+
+        panel.innerHTML = html;
+    }
+}
+
 
 document.addEventListener('click', function (event) {
     let element = event.target;

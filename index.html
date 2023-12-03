@@ -76,6 +76,7 @@
             border-style: solid;
             border-width: 2px;
             overflow: auto;
+            min-width: 100px;
         }
 
         #properties h3 {
@@ -88,6 +89,27 @@
             border-radius: 10px;
         }
 
+        #style-editor>* {
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        #style-actions button {
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #style-actions select {
+            border-width: 2px;
+            border-color: black;
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         #propertieswindow button {
             background-color: blueviolet;
             border-radius: 10px;
@@ -97,6 +119,15 @@
 
         #propertieswindow textarea {
             padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #propertieswindow select {
+            border-color: black;
+            border-width: 2px;
+            background-color: blueviolet;
+            border-radius: 10px;
+            color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -129,7 +160,7 @@
         <img src="./assets/logo.png" alt="">
         <div id="object">
             <button
-                onclick="newElement(getDropdownElement(), {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png'})">
+                onclick="newElement(getDropdownElement(), {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png', 'style': ''})">
                 Add Element
 
             </button>
@@ -168,6 +199,7 @@
         <div id="view">
             <button onclick="openPanel('preview')">Open Preview</button>
             <button onclick="openPanel('properties')">Open Properties</button>
+            <button onclick="openPanel('style-editor')">Open Style Editor</button>
         </div>
     </div>
 

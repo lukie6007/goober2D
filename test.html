@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Generator</title>
+    <style>
+        #propertiesRenderWindow {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="propertiesRenderWindow">hello</div>
+    <button id="styleAdd" onclick="addProperty()">Add Property</button>
+    <select id="cssProperties">
+        <option disabled selected value="">Select a property</option>
+
+        <optgroup label="Text Properties">
+            <option value="color">Color</option>
+            <option value="font-size">Font Size</option>
+            <option value="font-family">Font Family</option>
+            <option value="text-align">Text Align</option>
+            <option value="text-decoration">Text Decoration</option>
+            <option value="line-height">Line Height</option>
+        </optgroup>
+
+        <!-- Add other property groups and options as needed -->
+
+    </select>
+
+    <script>
+        function addProperty() {
+            var selectedProperty = document.getElementById("cssProperties").value;
+            var input = prompt("Enter the value for " + selectedProperty + ":");
+            if (input !== null) {
+                var renderWindow = document.getElementById("propertiesRenderWindow");
+                renderWindow.style[selectedProperty] = input;
+            }
+        }
+    </script>
+
+</body>
+
+</html>
