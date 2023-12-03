@@ -47,6 +47,7 @@ const styleMenu = `
 
 const panelHtml = {
     "preview": `<div id="pageload"></div>`,
+
     "properties": `
     <h3>Properties Panel</h3>
     <div id="propertieswindow"></div>
@@ -73,7 +74,7 @@ function createPanel(id) {
     let panel = document.createElement('div')
     panel.id = id
     panel.className = 'panel'
-    panel.style.width = '100%'
+    panel.style.width = '500px'
     panel.innerHTML = `
             <button class="close-button" onclick="closePanel(this)">
                 <img src="./assets/xbutton.png" alt="Close Panel">
