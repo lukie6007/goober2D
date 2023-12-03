@@ -58,7 +58,7 @@ let elementPropertiesInfo = {
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
         { "label": "Source", "property": "src", "type": "text", "id": "imageSource" },
-        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageAlt" },
+        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageSource" },
         { "label": "Style", "property": "style", "type": "script", "id": "imageStyle" },
     ],
 
@@ -132,9 +132,11 @@ function replaceKeywordsWithSet(obj, keyword, replacement) {
 
 let basicProperties = [
     { "label": "Basic Properties", "type": "heading" },
-    { "label": "Name", "property": "name", "type": "text", "id": "divName" },
-    { "label": "Class", "property": "className", "type": "text", "id": "divClass" },
-    { "label": "ID", "property": "id", "type": "text", "id": "divId" }
+    { "label": "Name", "property": "name", "type": "text", "id": "defaultName" },
+    { "label": "Class", "property": "className", "type": "text", "id": "defaultClass" },
+    { "label": "ID", "property": "id", "type": "text", "id": "defaultId" },
+    { "label": "Comment", "property": "elementComment", "type": "text", "id": "defaultComment" },
+    { "label": "On Click", "property": "onclick", "type": "script", "id": "onclickButton" },
 ];
 
 let visualProperties = [
@@ -186,12 +188,21 @@ function deleteElement(elementSelect) {
     let element = elementSelect || window.ElementSelected;
     let elements = page.elements;
     let index = elements.indexOf(element);
-
+    let can = true
     if (index !== -1) {
-        elements.splice(index, 1);
-        window.ElementSelected = null;
-        loadPage();
-        updatePropertiesPanel(null);
+        console.log(JSON.stringify(page.elements[index]))
+        if (JSON.stringify(page.elements[index]).length > 300) {
+            can = confirm('Are you sure?')
+        }
+
+        if (can) {
+            elements.splice(index, 1);
+            window.ElementSelected = page.elements[index - 1];
+            loadPage();
+            updatePropertiesPanel(page.elements[index - 1]);
+        }
+
+
     }
 }
 
@@ -278,7 +289,8 @@ function renderPropertyInput(property, element) {
     let inputElement;
 
     if (property.type === 'script') {
-        inputElement = `<textarea id="${property.id}">${element.properties[property.property] || ''}</textarea>`;
+        inputElement = `<p>${property.label}</p>
+        <textarea id="${property.id}">${element.properties[property.property] || ''}</textarea>`;
     } else if (property.type === 'heading') {
         inputElement = `<hr><h3>${property.label}</h3>`;
     } else {
@@ -288,6 +300,24 @@ function renderPropertyInput(property, element) {
 
     return `${inputElement}<div></div>`;
 }
+
+function elementMove(spaces) {
+    let element = window.ElementSelected;
+    if (element) {
+        let index = page.elements.indexOf(element);
+        let targetIndex = index + spaces;
+
+        // Ensure targetIndex is within valid bounds
+        if (targetIndex >= 0 && targetIndex < page.elements.length) {
+            // Swap elements at index and targetIndex
+            [page.elements[index], page.elements[targetIndex]] = [page.elements[targetIndex], page.elements[index]];
+        } else {
+            console.error('Invalid target index:', targetIndex);
+        }
+        loadPage()
+    }
+}
+
 
 function updateStylePanel() {
     let panel = document.getElementById('style-window')
@@ -318,15 +348,102 @@ function updatePropertiesPanel(elementSelect) {
 
             window.ElementSelected = element;
             content += `
-        <div></div>
-        <hr>
-        <button onclick="saveProperties()">Save</button>
-        <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
-      `;
+          <div></div>
+          <hr>
+          <button onclick="saveProperties()">Save</button>
+          <button onclick="elementMove(-1)">Up</button>
+          <button onclick="elementMove(1)">Down</button>
+          <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
+        `;
+
+            panel.innerHTML = content;
+            updateStylePanel()
         }
     }
 }
 
+
+function parseInlineCSS(cssString) {
+    const inlineProperties = {};
+    const propertyRegex = /([^:\s]+)\s*:\s*([^;]+);/g;
+
+    let propertyMatch;
+    while ((propertyMatch = propertyRegex.exec(cssString)) !== null) {
+        const property = propertyMatch[1].trim();
+        const value = propertyMatch[2].trim();
+        inlineProperties[property] = value;
+    }
+
+    return inlineProperties;
+}
+
+function objectToHTML(tagName, attributes) {
+    const attributeString = Object.entries(attributes)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+
+    return `<${tagName} ${attributeString}></${tagName}>`;
+}
+
+function addStyleProperty(value) {
+    if (window.ElementSelected) {
+        let keyElement = document.getElementById('cssProperties');
+        if (keyElement) {
+            let key = keyElement.value;
+            let currentStyle = window.ElementSelected.properties.style || '';
+
+            // Check if the style property already exists to avoid duplicates
+            if (!currentStyle.includes(`${key}:`)) {
+                window.ElementSelected.properties.style += `${currentStyle} ${key}: ${value};`;
+                updateStylePanel();
+            }
+        }
+    }
+}
+
+function changeStyleProperty(property, value) {
+    if (window.ElementSelected) {
+        let styles = parseInlineCSS(window.ElementSelected.properties.style);
+        styles[property] = value;
+
+        // Update the style property
+        let newStyle = '';
+        for (let key in styles) {
+            if (styles.hasOwnProperty(key)) {
+                newStyle += `${key}: ${styles[key]}; `;
+            }
+        }
+
+        window.ElementSelected.properties.style = newStyle.trim();
+
+        // Update the style panel
+        updateStylePanel();
+        loadPage()
+    }
+}
+
+
+function updateStylePanel() {
+    let panel = document.getElementById('style-window');
+
+    if (panel && window.ElementSelected) {
+        let styles = parseInlineCSS(window.ElementSelected.properties.style);
+        let html = '<ul>';
+
+        for (let key in styles) {
+            if (styles.hasOwnProperty(key)) {
+                html += `<li>${key}: <input onchange="changeStyleProperty('${key}', event.target.value)" value="${styles[key]}"></input></li>`;
+            }
+        }
+
+        html += '</ul>';
+
+        panel.innerHTML = html;
+    }
+}
+
+
+//selection
 document.addEventListener('click', function (event) {
     let element = event.target;
 
@@ -335,6 +452,28 @@ document.addEventListener('click', function (event) {
     }
 });
 
+// onclick handler
+document.addEventListener('click', function (event) {
+    // Get the clicked element
+    let element = event.target;
+
+    // Check if the clicked element has a property named GENERATED
+    if (element.GENERATED) {
+        // Get the page ID and onclick function from the element
+        let pageID = element.pageID;
+        let onclickFunction = new Function(page.elements[element.pageID].properties.onclick)
+
+        // Check if the onclick function is a valid function
+        if (typeof onclickFunction === 'function') {
+            // Call the onclick function with the clicked element as an argument
+            onclickFunction.call(element);
+        } else {
+            console.error('Invalid onclick function:', onclickFunction);
+        }
+    }
+});
+
+
 document.addEventListener('keydown', function (event) {
     if ((event.ctrlKey || event.metaKey) && event.key === 's') {
         event.preventDefault();
@@ -342,4 +481,4 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-loadPage();
+loadPage()

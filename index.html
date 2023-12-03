@@ -64,7 +64,7 @@
 
         .panel {
             position: relative;
-            height: 89vh;
+            height: 90vh;
             margin: 10px;
             resize: horizontal;
 
@@ -143,10 +143,6 @@
             z-index: 10;
         }
 
-        #hierarchy h3 {
-            color: rgb(0, 0, 0);
-            margin: 10px;
-        }
 
         .close-button img {
             max-height: 15px;
@@ -163,7 +159,7 @@
         <img src="./assets/logo.png" alt="">
         <div id="object">
             <button
-                onclick="newElement(getDropdownElement(), {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png', 'style': ''})">
+                onclick="newElement(getDropdownElement(), {'onclick': '', 'innerHTML':`New Element ${getNextElementID()}`, 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png', 'style': ''})">
                 Add Element
 
             </button>

@@ -74,7 +74,7 @@ function createPanel(id) {
     let panel = document.createElement('div')
     panel.id = id
     panel.className = 'panel'
-    panel.style.width = '500px'
+    panel.style.width = '50%'
     panel.innerHTML = `
             <button class="close-button" onclick="closePanel(this)">
                 <img src="./assets/xbutton.png" alt="Close Panel">
