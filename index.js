@@ -58,7 +58,7 @@ let elementPropertiesInfo = {
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
         { "label": "Source", "property": "src", "type": "text", "id": "imageSource" },
-        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageSource" },
+        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageAlt" },
         { "label": "Style", "property": "style", "type": "script", "id": "imageStyle" },
     ],
 
