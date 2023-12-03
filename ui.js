@@ -114,3 +114,4 @@ function defaultUI() {
 }
 
 defaultUI()
+loadFromLocalStorage()
