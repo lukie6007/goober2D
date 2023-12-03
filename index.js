@@ -60,7 +60,7 @@ let elementPropertiesInfo = {
         "BASIC",
         { "label": "Visual Properties", "type": "heading" },
         { "label": "Source", "property": "src", "type": "text", "id": "imageSource" },
-        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageAlt" },
+        { "label": "Alternative Text", "property": "alt", "type": "text", "id": "imageSource" },
         { "label": "Style", "property": "style", "type": "script", "id": "imageStyle" },
     ],
 
@@ -235,31 +235,6 @@ function getDropdownElement() {
     }
 }
 
-function objectToHTML(obj, parentElement) {
-    const ul = document.createElement('ul');
-    parentElement.appendChild(ul);
-
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            const li = document.createElement('li');
-            li.textContent = key;
-
-            if (typeof obj[key] === 'object') {
-                objectToHTML(obj[key], li);
-            } else {
-                const span = document.createElement('span');
-                span.textContent = `: ${obj[key]}`;
-                li.appendChild(span);
-            }
-
-            ul.appendChild(li);
-
-        }
-    }
-}
-
-
-
 function renderPropertyInput(property, element) {
     let inputElement;
 
@@ -298,11 +273,71 @@ function updatePropertiesPanel(elementSelect) {
           <button onclick="saveProperties()">Save</button>
           <button style="background-color: rgb(215, 3, 3);" onclick="deleteElement()">Delete</button>
         `;
-        }
 
+            panel.innerHTML = content;
+        }
+    }
+}
+
+
+function parseInlineCSS(cssString) {
+    const inlineProperties = {};
+    const propertyRegex = /([^:\s]+)\s*:\s*([^;]+);/g;
+
+    let propertyMatch;
+    while ((propertyMatch = propertyRegex.exec(cssString)) !== null) {
+        const property = propertyMatch[1].trim();
+        const value = propertyMatch[2].trim();
+        inlineProperties[property] = value;
     }
 
+    return inlineProperties;
 }
+
+function objectToHTML(tagName, attributes) {
+    const attributeString = Object.entries(attributes)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+
+    return `<${tagName} ${attributeString}></${tagName}>`;
+}
+
+function addStyleProperty(value) {
+    if (window.ElementSelected) {
+        let keyElement = document.getElementById('cssProperties');
+        if (keyElement) {
+            let key = keyElement.value;
+            let currentStyle = window.ElementSelected.properties.style || '';
+
+            // Check if the style property already exists to avoid duplicates
+            if (!currentStyle.includes(`${key}:`)) {
+                window.ElementSelected.properties.style += `${currentStyle} ${key}: ${value};`;
+                updateStylePanel();
+            }
+        }
+    }
+}
+
+
+function updateStylePanel() {
+    let panel = document.getElementById('style-window');
+
+    if (panel && window.ElementSelected) {
+        let styles = parseInlineCSS(window.ElementSelected.properties.style);
+        let html = '<ul>';
+
+        for (let key in styles) {
+            if (styles.hasOwnProperty(key)) {
+                html += `<li>${key}: ${styles[key]}</li>`;
+            }
+        }
+
+        html += '</ul>';
+
+        panel.innerHTML = html;
+    }
+}
+
 
 document.addEventListener('click', function (event) {
     let element = event.target;
@@ -324,4 +359,3 @@ document.addEventListener('keydown', function (event) {
 });
 
 loadPage()
-
