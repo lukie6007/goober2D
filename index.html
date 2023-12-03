@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/logo.ico" type="image/x-icon">
     <title>goober2D</title>
     <style>
         body {
@@ -49,6 +50,10 @@
             border-radius: 10px;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #action-bar input {
+            border-radius: 10px;
         }
 
 
@@ -199,6 +204,13 @@
             <button onclick="openPanel('preview')">Open Preview</button>
             <button onclick="openPanel('properties')">Open Properties</button>
             <button onclick="openPanel('style-editor')">Open Style Editor</button>
+        </div>
+        <div id="file">
+            <button onclick="loadSelectedFile()">Load</button>
+            <button onclick="saveToLocalStorage()">Save</button>
+            <select onchange="" id="fileName"></select>
+            <button onclick="deleteFile()">Delete File</button>
+            <button onclick="exportHTML()">Export HTML</button>
         </div>
     </div>
 

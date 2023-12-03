@@ -1,46 +1,4 @@
-const cssDropdown = `
-  <select id="cssProperties" onchange="applyProperty()">
-    <option selected disabled value="">Select a property</option>
 
-    <optgroup label="Text Properties">
-      <option value="color">Color</option>
-      <option value="font-size">Font Size</option>
-      <option value="font-family">Font Family</option>
-      <option value="text-align">Text Align</option>
-      <option value="text-decoration">Text Decoration</option>
-      <option value="line-height">Line Height</option>
-    </optgroup>
-
-    <optgroup label="Box Model Properties">
-      <option value="margin">Margin</option>
-      <option value="padding">Padding</option>
-      <option value="border">Border</option>
-      <option value="width">Width</option>
-      <option value="height">Height</option>
-      <option value="display">Display</option>
-      <option value="position">Position</option>
-      <option value="top">Top</option>
-      <option value="right">Right</option>
-      <option value="bottom">Bottom</option>
-      <option value="left">Left</option>
-      <option value="float">Float</option>
-      <option value="clear">Clear</option>
-    </optgroup>
-
-    <optgroup label="Background Properties">
-      <option value="background-color">Background Color</option>
-      <option value="background-image">Background Image</option>
-      <option value="background-size">Background Size</option>
-      <option value="background-position">Background Position</option>
-    </optgroup>
-
-    <optgroup label="Flexbox Properties">
-      <option value="flex">Flex</option>
-      <option value="flex-direction">Flex Direction</option>
-      <option value="justify-content">Justify Content</option>
-      <option value="align-items">Align Items</option>
-    </optgroup>
-  </select>`;
 
 let elementPropertiesInfo = {
     "div": [
@@ -213,23 +171,25 @@ function deleteElement(elementSelect) {
     let element = elementSelect || window.ElementSelected;
     let elements = page.elements;
     let index = elements.indexOf(element);
-    let can = true
+    let can = true;
+
     if (index !== -1) {
-        console.log(JSON.stringify(page.elements[index]))
+        console.log(JSON.stringify(page.elements[index]));
         if (JSON.stringify(page.elements[index]).length > 300) {
-            can = confirm('Are you sure?')
+            can = confirm('Are you sure?');
         }
 
         if (can) {
             elements.splice(index, 1);
-            window.ElementSelected = page.elements[index - 1];
+            let newelement = page.elements[index - 1] || page.elements[index + 1];
+            window.ElementSelected = newelement;
             loadPage();
-            updatePropertiesPanel(page.elements[index - 1]);
+            updatePropertiesPanel(newelement);
         }
-
-
     }
 }
+
+// Add these functions to your existing script
 
 function saveProperties() {
     let element = window.ElementSelected;
@@ -248,6 +208,158 @@ function saveProperties() {
 
     updatePropertiesPanel();
     loadPage();
+}
+
+function saveToLocalStorage(value) {
+    // Save the page object to localStorage
+    let val = value || document.getElementById("fileName").value
+    if (val === 'new-file') {
+        let name = prompt('Name the file.')
+        if (name) {
+            saveToLocalStorage(name)
+            loadFromLocalStorage()
+        } else {
+            return
+        }
+
+    }
+
+    localStorage.setItem('goober:' + val, JSON.stringify(page));
+}
+
+function deleteFile() {
+    if (confirm('Are you sure?')) {
+        let val = document.getElementById("fileName").value
+        localStorage.removeItem('goober:' + val)
+        loadFromLocalStorage()
+    }
+}
+
+function loadFromLocalStorage() {
+    // Load the page object from localStorage
+    const fileNameDropdown = document.getElementById("fileName");
+
+    // Clear existing options
+    fileNameDropdown.innerHTML = '<option value="">Select a File</option>';
+
+    // Iterate through localStorage keys and add them as options
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+
+        // Check if the key starts with 'goober:'
+        if (key.startsWith('goober:')) {
+            const fileName = key.replace('goober:', '');
+
+            // Create an option element
+            const option = document.createElement("option");
+            option.value = fileName;
+            option.text = fileName;
+
+            // Append the option to the dropdown
+            fileNameDropdown.appendChild(option);
+        }
+    }
+    fileNameDropdown.innerHTML += '<option value="new-file">New File</option>';
+}
+
+function loadSelectedFile() {
+    let selectedFileName = document.getElementById("fileName").value;
+
+    if (selectedFileName) {
+        const savedPage = localStorage.getItem('goober:' + selectedFileName);
+        if (savedPage) {
+            page = JSON.parse(savedPage);
+            loadPage();
+        }
+    }
+}
+
+// Function to recursively generate HTML for an element and its children
+function loadPageExport() {
+    let preview = document.getElementById('pageload');
+
+    if (preview) {
+        preview.innerHTML = '';
+
+        const fragment = document.createDocumentFragment();
+
+        page.elements.forEach((elementInfo, index) => {
+            let newElement = document.createElement(elementInfo.elementType);
+            newElement.GENERATED = true;
+            newElement.pageID = index;
+
+            Object.entries(elementInfo.properties).forEach(([property, value]) => {
+                newElement[property] = value;
+            });
+
+            fragment.appendChild(newElement);
+        });
+
+        preview.appendChild(fragment);
+        updateStylePanel();
+    }
+}
+
+function exportHTML() {
+    let previewwindow = document.getElementById('pageload')
+    loadPage()
+    if (previewwindow) {
+        let html = `
+        <!DOCTYPE HTML>
+        <html>
+
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>goober2D</title>
+        </head>
+
+        <body>
+
+        <div id="pageload">
+        </div>
+                <script>
+        let page = ${JSON.stringify(page)}
+        ${loadPageExport}
+        // onclick handler
+document.addEventListener('click', function (event) {
+    
+    // Get the clicked element
+    let element = event.target;
+console.log(element)
+    // Check if the clicked element has a property named GENERATED
+        // Get the page ID and onclick function from the element
+        let pageID = element.pageID;
+        let onclickFunction = new Function(page.elements[element.pageID].properties.onclick)
+
+        // Check if the onclick function is a valid function
+        if (typeof onclickFunction === 'function') {
+            // Call the onclick function with the clicked element as an argument
+            onclickFunction.call(element);
+        } else {
+            console.error('Invalid onclick function:', onclickFunction);
+        }
+});
+loadPageExport()
+        </script>
+        </body>
+        
+        </html>
+        `
+
+        let file = new Blob([html], { type: 'text/plain' })
+        let url = URL.createObjectURL(file)
+        let a = document.createElement('a')
+
+        a.href = url
+        a.download = 'index.html'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url);
+    } else {
+        alert("You must have the preview window open to export HTML.")
+    }
 }
 
 function getDropdownElement() {
@@ -447,7 +559,7 @@ function updateStylePanel() {
 
     if (panel && window.ElementSelected) {
         let styles = parseInlineCSS(window.ElementSelected.properties.style);
-        let html = '<ul>';
+        let html = `<h1>${window.ElementSelected.properties.name}</h1><ul>`;
 
         for (let key in styles) {
             if (styles.hasOwnProperty(key)) {
@@ -463,6 +575,8 @@ function updateStylePanel() {
         if (advancedStyle) {
             advancedStyle.innerHTML = window.ElementSelected.properties.style
         }
+
+
     }
 }
 
@@ -506,3 +620,4 @@ document.addEventListener('keydown', function (event) {
 });
 
 loadPage()
+//loadFromLocalStorage()
