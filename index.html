@@ -64,8 +64,7 @@
 
         .panel {
             position: relative;
-            width: 100px;
-            height: 89vh;
+            height: 90vh;
             margin: 10px;
             resize: horizontal;
 
@@ -160,7 +159,7 @@
         <img src="./assets/logo.png" alt="">
         <div id="object">
             <button
-                onclick="newElement(getDropdownElement(), {'innerHTML':'Hello World!', 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png', 'style': ''})">
+                onclick="newElement(getDropdownElement(), {'onclick': '', 'innerHTML':`New Element ${getNextElementID()}`, 'id': getNextElementID(), 'name':`New Element ${getNextElementID()}`, 'src': './assets/logo.png', 'style': ''})">
                 Add Element
 
             </button>
